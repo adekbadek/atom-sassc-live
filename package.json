@@ -1,9 +1,9 @@
 {
   "name": "atom-sassc-live",
   "main": "./lib/atom-sassc-live",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "description": "Live Sass with Atom and Chrome workspace",
-  "keywords": [],
+  "keywords": ["sassc", "chrome", "sass"],
   "activationCommands": {
     "atom-workspace": "atom-sassc-live:toggle"
   },
