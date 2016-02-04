@@ -1,6 +1,6 @@
 # atom-sassc-live
 
-# work in progress...
+NOTE: it's a work in progress...
 
 ## Requirements
 
@@ -12,8 +12,10 @@ This package, once toggled (```Packages > atom-sassc-live > Toggle```) will pars
 
 ## How
 
-1. Link HTML to the output ```.css``` file, then [set Up Persistence with DevTools Workspaces](https://developers.google.com/web/tools/setup/setup-workflow) for your ```.css``` file.
+1. Link HTML to the output ```.css``` file, then [set Up Persistence with DevTools Workspaces](https://developers.google.com/web/tools/setup/setup-workflow) it.
 2. Toggle package
+
+Now, when you type, Atom will save the file and sassc will compile it to CSS.
 
 
 
