@@ -1,5 +1,7 @@
 # atom-sassc-live
 
+# work in progress...
+
 ## Requirements
 
 You have to have [sassc](https://github.com/sass/sassc) installed (on OSX - easiest with [brew](https://github.com/sass/sassc))
