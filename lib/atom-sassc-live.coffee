@@ -11,7 +11,7 @@ filename_regex = /^.*[\\\/]/
 
 
 # TODO: make it editable in package settings
-SUBDIR_NAME = 'css/'
+SUBDIR_NAME = null
 
 # TODO: make it editable in package settings
 IGNORE_WITH_UNDERSCORE = true
@@ -74,15 +74,20 @@ module.exports = AtomSasscLive =
             atom.workspace.saveActivePaneItem()
 
             dir = editor.getPath().replace(directory_regex, '')
-            # create dir (if it doesn't exist)
-            term.write 'cd '+dir+'\n'
-            term.write 'mkdir -p '+SUBDIR_NAME+'\n'
+            if SUBDIR_NAME?
+              # create dir (if it doesn't exist)
+              term.write 'cd '+dir+'\n'
+              term.write 'mkdir -p '+SUBDIR_NAME+'\n'
 
             oldfile = editor.getPath()
-            newfile = dir+SUBDIR_NAME+toCss(filename)
+            if SUBDIR_NAME?
+              newfile = dir+SUBDIR_NAME+toCss(filename)
+            else
+              newfile = dir+'/'+toCss(filename)
+
             # run sassc
             term.write 'sassc '+oldfile+' > '+newfile+' --style compressed -m\n'
-            console.log "UPDATED FILE "+oldfile
+            console.log "UPDATED FILE "+filename
         )
 
 

@@ -8,7 +8,7 @@ You have to have [sassc](https://github.com/sass/sassc) installed (on OSX - easi
 
 ## What
 
-This package, once toggled (```Packages > atom-sassc-live > Toggle```) will parse ```.sass```/```.scss``` files *while you type*. By default the ```.css``` output will be saved in ```/css``` directory in the directory where the original ```.sass``` file is.
+This package, once toggled (```Packages > atom-sassc-live > Toggle```) will parse ```.sass```/```.scss``` files *while you type*. By default the ```.css``` output will be saved in ```/css``` directory in the directory where the original ```.sass``` file is. Or not, depending in settings.
 
 ## How
 
