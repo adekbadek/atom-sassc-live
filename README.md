@@ -12,8 +12,7 @@ This package, once toggled (```Packages > atom-sassc-live > Toggle```) will pars
 
 ## How
 
-1. Link HTML to the output ```.css``` file, then (wet Up Persistence with DevTools Workspaces
-)[https://developers.google.com/web/tools/setup/setup-workflow?hl=en] for your ```.css``` file.
+1. Link HTML to the output ```.css``` file, then [set Up Persistence with DevTools Workspaces](https://developers.google.com/web/tools/setup/setup-workflow) for your ```.css``` file.
 2. Toggle package
 
 
