@@ -10,12 +10,11 @@ directory_regex = /[^\/]*$/
 filename_regex = /^.*[\\\/]/
 
 
-
 # TODO: make it editable in package settings
 SUBDIR_NAME = 'css/'
 
 # TODO: make it editable in package settings
-IGNORE_WITH_LODASH = true
+IGNORE_WITH_UNDERSCORE = true
 
 
 
@@ -35,6 +34,7 @@ toCss = (fileName) ->
 module.exports = AtomSasscLive =
   modalPanel: null
   subscriptions: null
+  watcher: null
 
   activate: (state) ->
 
@@ -62,28 +62,33 @@ module.exports = AtomSasscLive =
       if isSassFile(editor.getPath())
         # on any change (typing)
         editor.onDidChange(->
-          filename = editor.getPath().replace(filename_regex, '')
-          # return if we ignore lodash'd files
-          if IGNORE_WITH_LODASH and filename.indexOf('_') >= 0
-            return
-          dir = editor.getPath().replace(directory_regex, '')
-          # create dir (if it doesn't exist)
-          term.write 'cd '+dir+'\n'
-          term.write 'mkdir -p '+SUBDIR_NAME+'\n'
 
-          oldfile = editor.getPath()
-          newfile = dir+SUBDIR_NAME+toCss(filename)
-          # run sassc
-          term.write 'sassc '+oldfile+' > '+newfile+' --style compressed -m\n'
-          console.log "UPDATED FILE "+oldfile
+          if ACTIVE
+
+            filename = editor.getPath().replace(filename_regex, '')
+            # return if we ignore underscored'd files
+            if IGNORE_WITH_UNDERSCORE and filename.indexOf('_') >= 0
+              return
+
+            # first we need to save the file
+            atom.workspace.saveActivePaneItem()
+
+            dir = editor.getPath().replace(directory_regex, '')
+            # create dir (if it doesn't exist)
+            term.write 'cd '+dir+'\n'
+            term.write 'mkdir -p '+SUBDIR_NAME+'\n'
+
+            oldfile = editor.getPath()
+            newfile = dir+SUBDIR_NAME+toCss(filename)
+            # run sassc
+            term.write 'sassc '+oldfile+' > '+newfile+' --style compressed -m\n'
+            console.log "UPDATED FILE "+oldfile
         )
 
 
   deactivate: ->
 
-    # TODO: deactivate observing!
-
-    @subscriptions.dispose()
+      @subscriptions.dispose()
 
   toggle: ->
     if(ACTIVE)
