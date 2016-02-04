@@ -13,7 +13,7 @@ This package, once toggled (```Packages > atom-sassc-live > Toggle```) will pars
 ## How
 
 1. Link HTML to the output ```.css``` file, then [set Up Persistence with DevTools Workspaces](https://developers.google.com/web/tools/setup/setup-workflow).
-2. Toggle package
+2. Toggle package (with ```CTRL+ALT+O```)
 
 Now, when you type, Atom will save the file and sassc will compile it to CSS.
 

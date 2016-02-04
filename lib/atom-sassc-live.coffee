@@ -10,13 +10,8 @@ ACTIVE = false
 directory_regex = /[^\/]*$/
 filename_regex = /^.*[\\\/]/
 
-# TODO: make it editable in package settings
 SUBDIR_NAME = null
-
-# TODO: make it editable in package settings
 IGNORE_WITH_UNDERSCORE = true
-
-# TODO: make it editable in package settings
 DEBOUNCE_DELAY = 250
 
 
@@ -76,6 +71,18 @@ module.exports = AtomSasscLive =
     # term.on 'data', (data) ->
     #   console.log data
 
+    # read settings:
+    #
+    # console.log 'ignoreUnderscored = '+ atom.config.get('atom-sassc-live.ignoreUnderscored')
+    IGNORE_WITH_UNDERSCORE = atom.config.get('atom-sassc-live.ignoreUnderscored')
+    # 
+    if atom.config.get('atom-sassc-live.subdirName')
+      # console.log 'subdirName = '+ atom.config.get('atom-sassc-live.subdirName')
+      SUBDIR_NAME = atom.config.get('atom-sassc-live.subdirName')
+    if atom.config.get('atom-sassc-live.debounceDelay')
+      # console.log 'debounceDelay = '+ atom.config.get('atom-sassc-live.debounceDelay')
+      DEBOUNCE_DELAY = atom.config.get('atom-sassc-live.debounceDelay')
+
     # observe file changes
     atom.workspace.observeTextEditors (editor) ->
       # if it's a sass file
@@ -123,3 +130,21 @@ module.exports = AtomSasscLive =
     else
       console.log 'AtomSasscLive was activated!'
       ACTIVE = true
+
+  config:
+    ignoreUnderscored:
+      title: 'Ignore files which names begin with an underscore'
+      description: "By convention, these are partials, so you wouldn't want to compile them to CSS."
+      type: 'boolean'
+      default: true
+    debounceDelay:
+      title: 'Delay for debounce'
+      description: "It wouldn't be a good idea to trigger compiling on _every_ keystroke. This is a minimum time until next compilation takes place (in miliseconds)"
+      type: 'integer'
+      default: 250
+      minimum: 1
+    subdirName:
+      title: 'Subdirectory'
+      description: "If you want CSS files to be save in a different folder, specify it here (e.g. ```css/```)"
+      type: 'string'
+      default: ''
