@@ -6,9 +6,9 @@ SUPPORTED_FILE_TYPES = [
   '.scss'
 ]
 
+ACTIVE = false
 directory_regex = /[^\/]*$/
 filename_regex = /^.*[\\\/]/
-
 
 # TODO: make it editable in package settings
 SUBDIR_NAME = null
@@ -16,9 +16,29 @@ SUBDIR_NAME = null
 # TODO: make it editable in package settings
 IGNORE_WITH_UNDERSCORE = true
 
+# TODO: make it editable in package settings
+DEBOUNCE_DELAY = 250
 
 
-ACTIVE = false
+# debouncer - sassc will run max. 1 time every <delay>
+onetimer = false
+debounce = (fn, delay) ->
+  timer = null
+  func = () ->
+    # console.log "no you won't..."
+    onetimer = true
+    context = this
+    args = arguments
+    clearTimeout timer
+    timer = setTimeout((->
+      if onetimer
+        # console.log "now you will, but just one time"
+        fn.apply context, args
+        onetimer = false
+      return
+    ), delay)
+    return
+  func()
 
 isSassFile = (filePath) ->
   path.extname(filePath) in SUPPORTED_FILE_TYPES
@@ -61,35 +81,36 @@ module.exports = AtomSasscLive =
       # if it's a sass file
       if isSassFile(editor.getPath())
         # on any change (typing)
-        editor.onDidChange(->
+        editor.onDidChange ->
 
-          if ACTIVE
+          debounce (->
+            if ACTIVE
 
-            filename = editor.getPath().replace(filename_regex, '')
-            # return if we ignore underscored'd files
-            if IGNORE_WITH_UNDERSCORE and filename.indexOf('_') >= 0
-              return
+              filename = editor.getPath().replace(filename_regex, '')
+              # return if we ignore underscored'd files
+              if IGNORE_WITH_UNDERSCORE and filename.indexOf('_') >= 0
+                return
 
-            # first we need to save the file
-            atom.workspace.saveActivePaneItem()
+              # first we need to save the file
+              atom.workspace.saveActivePaneItem()
 
-            dir = editor.getPath().replace(directory_regex, '')
-            if SUBDIR_NAME?
-              # create dir (if it doesn't exist)
-              term.write 'cd '+dir+'\n'
-              term.write 'mkdir -p '+SUBDIR_NAME+'\n'
+              dir = editor.getPath().replace(directory_regex, '')
+              if SUBDIR_NAME?
+                # create dir (if it doesn't exist)
+                term.write 'cd '+dir+'\n'
+                term.write 'mkdir -p '+SUBDIR_NAME+'\n'
 
-            oldfile = editor.getPath()
-            if SUBDIR_NAME?
-              newfile = dir+SUBDIR_NAME+toCss(filename)
-            else
-              newfile = dir+'/'+toCss(filename)
+              oldfile = editor.getPath()
+              if SUBDIR_NAME?
+                newfile = dir+SUBDIR_NAME+toCss(filename)
+              else
+                newfile = dir+'/'+toCss(filename)
 
-            # run sassc
-            term.write 'sassc '+oldfile+' > '+newfile+' --style compressed -m\n'
-            console.log "UPDATED FILE "+filename
-        )
+              # run sassc
+              term.write 'sassc '+oldfile+' > '+newfile+' --style compressed\n'
+              console.log "UPDATED FILE "+filename
 
+          ), DEBOUNCE_DELAY
 
   deactivate: ->
 
