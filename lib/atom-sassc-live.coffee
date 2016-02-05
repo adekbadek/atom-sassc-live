@@ -1,4 +1,5 @@
 {CompositeDisposable} = require 'atom'
+{MessagePanelView, LineMessageView} = require 'atom-message-panel'
 pty = require('pty.js')
 
 SUPPORTED_FILE_TYPES = [
@@ -14,6 +15,8 @@ SUBDIR_NAME = null
 IGNORE_WITH_UNDERSCORE = true
 DEBOUNCE_DELAY = 250
 
+messages = new MessagePanelView
+  title: 'atom-sassc-live messages'
 
 # debouncer - sassc will run max. 1 time every <delay>
 onetimer = false
@@ -68,14 +71,21 @@ module.exports = AtomSasscLive =
       env: process.env)
 
     # debug
-    # term.on 'data', (data) ->
-    #   console.log data
+    term.on 'data', (data) ->
+      if data.indexOf('Error: ') >= 0
+        # message panel
+        messages.attach()
+        messages.setTitle('<span class="text-error">atom-sassc-live: ERROR 💩</span>', true)
+        messages.add new LineMessageView
+          line: parseInt(data.substring(data.indexOf('line')+5, data.length))
+          className: 'text-error'
+          message: data.split('\n')[0]
 
     # read settings:
     #
     # console.log 'ignoreUnderscored = '+ atom.config.get('atom-sassc-live.ignoreUnderscored')
     IGNORE_WITH_UNDERSCORE = atom.config.get('atom-sassc-live.ignoreUnderscored')
-    # 
+    #
     if atom.config.get('atom-sassc-live.subdirName')
       # console.log 'subdirName = '+ atom.config.get('atom-sassc-live.subdirName')
       SUBDIR_NAME = atom.config.get('atom-sassc-live.subdirName')
@@ -114,6 +124,8 @@ module.exports = AtomSasscLive =
                 newfile = dir+'/'+toCss(filename)
 
               # run sassc
+              messages.clear()
+              messages.setTitle('<span class="text-success">atom-sassc-live: OK 😎</span>', true)
               term.write 'sassc '+oldfile+' > '+newfile+' --style compressed\n'
               console.log "UPDATED FILE "+filename
 
@@ -126,9 +138,13 @@ module.exports = AtomSasscLive =
   toggle: ->
     if(ACTIVE)
       console.log 'AtomSasscLive was de-activated!'
+      # message panel
+      messages.close()
       ACTIVE = false
     else
       console.log 'AtomSasscLive was activated!'
+      # message panel
+      messages.attach()
       ACTIVE = true
 
   config:

@@ -17,6 +17,7 @@
     "atom": ">=1.0.0 <2.0.0"
   },
   "dependencies": {
+    "atom-message-panel": "^1.2.4",
     "pty.js": "^0.3.0"
   }
 }
