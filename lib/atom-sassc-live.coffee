@@ -10,6 +10,7 @@ SUPPORTED_FILE_TYPES = [
 ACTIVE = false
 directory_regex = /[^\/]*$/
 filename_regex = /^.*[\\\/]/
+error_title = '<span class="text-error">atom-sassc-live: ERROR 💩</span>'
 
 SUBDIR_NAME = null
 IGNORE_WITH_UNDERSCORE = true
@@ -72,10 +73,17 @@ module.exports = AtomSasscLive =
 
     # debug
     term.on 'data', (data) ->
+      if data.indexOf('Segmentation fault') >= 0
+        # message panel
+        messages.attach()
+        messages.setTitle(error_title, true)
+        messages.add new LineMessageView
+          className: 'text-error'
+          message: data
       if data.indexOf('Error: ') >= 0
         # message panel
         messages.attach()
-        messages.setTitle('<span class="text-error">atom-sassc-live: ERROR 💩</span>', true)
+        messages.setTitle(error_title, true)
         messages.add new LineMessageView
           line: parseInt(data.substring(data.indexOf('line')+5, data.length))
           className: 'text-error'
