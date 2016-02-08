@@ -15,6 +15,7 @@ error_title = '<span class="text-error">atom-sassc-live: ERROR 💩</span>'
 SUBDIR_NAME = null
 IGNORE_WITH_UNDERSCORE = true
 DEBOUNCE_DELAY = 250
+SASSC_OPTIONS = '-t compressed'
 
 messages = new MessagePanelView
   title: 'atom-sassc-live messages'
@@ -100,6 +101,9 @@ module.exports = AtomSasscLive =
     if atom.config.get('atom-sassc-live.debounceDelay')
       # console.log 'debounceDelay = '+ atom.config.get('atom-sassc-live.debounceDelay')
       DEBOUNCE_DELAY = atom.config.get('atom-sassc-live.debounceDelay')
+    if atom.config.get('atom-sassc-live.SasscOptions')
+      # console.log 'SasscOptions = '+ atom.config.get('atom-sassc-live.SasscOptions')
+      SASSC_OPTIONS = atom.config.get('atom-sassc-live.SasscOptions')
 
     # observe file changes
     atom.workspace.observeTextEditors (editor) ->
@@ -134,7 +138,7 @@ module.exports = AtomSasscLive =
               # run sassc
               messages.clear()
               messages.setTitle('<span class="text-success">atom-sassc-live: OK 😎</span>', true)
-              term.write 'sassc '+oldfile+' > '+newfile+' --style compressed\n'
+              term.write 'sassc '+oldfile+' > '+newfile+' '+SASSC_OPTIONS+'\n'
               console.log "UPDATED FILE "+filename
 
           ), DEBOUNCE_DELAY
@@ -169,6 +173,11 @@ module.exports = AtomSasscLive =
       minimum: 1
     subdirName:
       title: 'Subdirectory'
-      description: "If you want CSS files to be save in a different folder, specify it here (e.g. ```css/```)"
+      description: "If you want CSS files to be save in a different folder, specify it here (e.g. `css/`)"
       type: 'string'
       default: ''
+    SasscOptions:
+      title: 'Sassc options'
+      description: "Pass options when running `sassc` command"
+      type: 'string'
+      default: '-t compressed'
