@@ -124,7 +124,7 @@ module.exports = AtomSasscLive =
               atom.workspace.saveActivePaneItem()
 
               dir = editor.getPath().replace(directory_regex, '')
-              if SUBDIR_NAME?
+              if SUBDIR_NAME? && SUBDIR_NAME != '../'
                 # create dir (if it doesn't exist)
                 term.write 'cd '+dir+'\n'
                 term.write 'mkdir -p '+SUBDIR_NAME+'\n'
