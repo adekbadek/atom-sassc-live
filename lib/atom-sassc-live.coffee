@@ -90,6 +90,9 @@ module.exports = AtomSasscLive =
           className: 'text-error'
           message: data.split('\n')[0]
 
+    # make sure that sassc is in the $PATH
+    term.write 'export PATH=/usr/local/bin:$PATH\n'
+
     # read settings:
     #
     # console.log 'ignoreUnderscored = '+ atom.config.get('atom-sassc-live.ignoreUnderscored')
