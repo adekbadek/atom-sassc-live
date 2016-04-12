@@ -12,6 +12,7 @@ directory_regex = /[^\/]*$/
 filename_regex = /^.*[\\\/]/
 error_title = '<span class="text-error">atom-sassc-live: ERROR 💩</span>'
 
+PARSE_ON_NEWLINE = true
 SUBDIR_NAME = null
 IGNORE_WITH_UNDERSCORE = true
 DEBOUNCE_DELAY = 250
@@ -50,6 +51,36 @@ toCss = (fileName) ->
   else
     # it's - name.scss or name.sass
     return fileName.replace(/\.sass|\.scss/, '.css')
+
+parseSass = (editor, term, msg) ->
+  console.log msg
+  if ACTIVE
+    filename = editor.getPath().replace(filename_regex, '')
+    # return if we ignore underscored'd files
+    if IGNORE_WITH_UNDERSCORE and filename.indexOf('_') >= 0
+      return
+
+    # first we need to save the file
+    atom.workspace.saveActivePaneItem()
+
+    dir = editor.getPath().replace(directory_regex, '')
+    if SUBDIR_NAME? && SUBDIR_NAME != '../'
+      # create dir (if it doesn't exist)
+      term.write 'cd '+dir+'\n'
+      term.write 'mkdir -p '+SUBDIR_NAME+'\n'
+
+    oldfile = editor.getPath()
+    if SUBDIR_NAME?
+      newfile = dir+SUBDIR_NAME+toCss(filename)
+    else
+      newfile = dir+'/'+toCss(filename)
+
+    # run sassc
+    messages.clear()
+    messages.setTitle('<span class="text-success">atom-sassc-live: OK 😎</span>', true)
+    term.write 'sassc '+oldfile+' > '+newfile+' '+SASSC_OPTIONS+'\n'
+    console.log "UPDATED FILE "+filename
+
 
 module.exports = AtomSasscLive =
   modalPanel: null
@@ -97,7 +128,8 @@ module.exports = AtomSasscLive =
     #
     # console.log 'ignoreUnderscored = '+ atom.config.get('atom-sassc-live.ignoreUnderscored')
     IGNORE_WITH_UNDERSCORE = atom.config.get('atom-sassc-live.ignoreUnderscored')
-    #
+    # console.log 'parseOnNewLine = '+ atom.config.get('atom-sassc-live.parseOnNewLine')
+    PARSE_ON_NEWLINE = atom.config.get('atom-sassc-live.parseOnNewLine')
     if atom.config.get('atom-sassc-live.subdirName')
       # console.log 'subdirName = '+ atom.config.get('atom-sassc-live.subdirName')
       SUBDIR_NAME = atom.config.get('atom-sassc-live.subdirName')
@@ -114,37 +146,14 @@ module.exports = AtomSasscLive =
       if isSassFile(editor.getPath())
         # on any change (typing)
         editor.onDidChange ->
-
-          debounce (->
-            if ACTIVE
-
-              filename = editor.getPath().replace(filename_regex, '')
-              # return if we ignore underscored'd files
-              if IGNORE_WITH_UNDERSCORE and filename.indexOf('_') >= 0
-                return
-
-              # first we need to save the file
-              atom.workspace.saveActivePaneItem()
-
-              dir = editor.getPath().replace(directory_regex, '')
-              if SUBDIR_NAME? && SUBDIR_NAME != '../'
-                # create dir (if it doesn't exist)
-                term.write 'cd '+dir+'\n'
-                term.write 'mkdir -p '+SUBDIR_NAME+'\n'
-
-              oldfile = editor.getPath()
-              if SUBDIR_NAME?
-                newfile = dir+SUBDIR_NAME+toCss(filename)
-              else
-                newfile = dir+'/'+toCss(filename)
-
-              # run sassc
-              messages.clear()
-              messages.setTitle('<span class="text-success">atom-sassc-live: OK 😎</span>', true)
-              term.write 'sassc '+oldfile+' > '+newfile+' '+SASSC_OPTIONS+'\n'
-              console.log "UPDATED FILE "+filename
-
-          ), DEBOUNCE_DELAY
+          if PARSE_ON_NEWLINE && editor.buffer != undefined
+            new_char = editor.buffer.history.undoStack[editor.buffer.history.undoStack.length-1].newText
+            if new_char == "↵" || new_char == "\n"
+              parseSass(editor, term, 'on newline')
+          else if !PARSE_ON_NEWLINE
+            debounce (->
+              parseSass(editor, term, 'debouns')
+            ), DEBOUNCE_DELAY
 
   deactivate: ->
 
@@ -164,21 +173,29 @@ module.exports = AtomSasscLive =
 
   config:
     ignoreUnderscored:
+      order: 1
       title: 'Ignore files which names begin with an underscore'
       description: "By convention, these are partials, so you wouldn't want to compile them to CSS."
       type: 'boolean'
       default: true
-    debounceDelay:
-      title: 'Delay for debounce'
-      description: "It wouldn't be a good idea to trigger compiling on _every_ keystroke. This is a minimum time until next compilation takes place (in miliseconds)"
-      type: 'integer'
-      default: 250
-      minimum: 1
+    parseOnNewLine:
+      order: 2
+      title: "Parse on newline"
+      description: "Parse the Sass to CSS *on hitting return*, that is when the last character is newline."
+      type: 'boolean'
+      default: true
     subdirName:
+      order: 3
       title: 'Subdirectory'
       description: "If you want CSS files to be save in a different folder, specify it here (e.g. `css/`)"
       type: 'string'
       default: ''
+    debounceDelay:
+      title: 'Delay for debounce'
+      description: "If __Parse on newline__ is turned off, package will parse Sass on typing anything. However it wouldn't be a good idea to trigger compiling on _every_ keystroke - this is a minimum time until next compilation takes place (in miliseconds)"
+      type: 'integer'
+      default: 250
+      minimum: 1
     SasscOptions:
       title: 'Sassc options'
       description: "Pass options when running `sassc` command"
