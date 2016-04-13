@@ -8,6 +8,7 @@ SUPPORTED_FILE_TYPES = [
 ]
 
 ACTIVE = false
+HAS_ERROR = false
 directory_regex = /[^\/]*$/
 filename_regex = /^.*[\\\/]/
 error_title = '<span class="text-error">atom-sassc-live: ERROR 💩</span>'
@@ -77,9 +78,14 @@ parseSass = (editor, term, msg) ->
 
     # run sassc
     messages.clear()
-    messages.setTitle('<span class="text-success">atom-sassc-live: OK 😎</span>', true)
+    HAS_ERROR = false
+    messages.setTitle('<span class="text-success">atom-sassc-live: UPDATED 🎉</span>', true)
+    setTimeout((->
+      unless HAS_ERROR
+        messages.setTitle('<span class="text-success">atom-sassc-live: OK 😎</span>', true)
+    ), 400)
     term.write 'sassc '+oldfile+' > '+newfile+' '+SASSC_OPTIONS+'\n'
-    console.log "UPDATED FILE "+filename
+    # console.log "UPDATED FILE "+filename
 
 
 module.exports = AtomSasscLive =
@@ -112,6 +118,7 @@ module.exports = AtomSasscLive =
         messages.add new LineMessageView
           className: 'text-error'
           message: data
+        HAS_ERROR = true
       if data.indexOf('Error: ') >= 0
         # message panel
         messages.attach()
@@ -120,6 +127,7 @@ module.exports = AtomSasscLive =
           line: parseInt(data.substring(data.indexOf('line')+5, data.length))
           className: 'text-error'
           message: data.split('\n')[0]
+        HAS_ERROR = true
 
     # make sure that sassc is in the $PATH
     term.write 'export PATH=/usr/local/bin:$PATH\n'
@@ -146,6 +154,7 @@ module.exports = AtomSasscLive =
       if isSassFile(editor.getPath())
         # on any change (typing)
         editor.onDidChange ->
+
           if PARSE_ON_NEWLINE && editor.buffer != undefined
             new_char = editor.buffer.history.undoStack[editor.buffer.history.undoStack.length-1].newText
             if new_char == "↵" || new_char == "\n"
@@ -161,12 +170,12 @@ module.exports = AtomSasscLive =
 
   toggle: ->
     if(ACTIVE)
-      console.log 'AtomSasscLive was de-activated!'
+      # console.log 'AtomSasscLive was de-activated!'
       # message panel
       messages.close()
       ACTIVE = false
     else
-      console.log 'AtomSasscLive was activated!'
+      # console.log 'AtomSasscLive was activated!'
       # message panel
       messages.attach()
       ACTIVE = true
