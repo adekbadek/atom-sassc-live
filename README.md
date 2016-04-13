@@ -1,10 +1,6 @@
 # atom-sassc-live
 
-![alt text](demo.gif "Logo Title Text 1")
-
-## Requirements
-
-You have to have [sassc](https://github.com/sass/sassc) installed and added to PATH (on OSX - it's simplest with [homebrew](http://brewformulas.org/Sassc)).
+![demo gif](http://adamboro.com/stuff/asl-demo.gif "Logo Title Text 1")
 
 ## What
 
@@ -18,3 +14,7 @@ This package will parse `.sass`/`.scss` files on newline (or as you type) and on
 ## Why
 
 This project is inspired by [Takana](http://usetakana.com). Unfortunately Takana does not support `.sass` syntax and runs it's own server, which may conflict with a local server or asset pipeline.
+
+## Requirements
+
+You have to have [sassc](https://github.com/sass/sassc) installed and added to PATH (on OSX - it's simplest with [homebrew](http://brewformulas.org/Sassc)).
