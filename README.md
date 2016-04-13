@@ -8,8 +8,9 @@ This package will parse `.sass`/`.scss` files on newline (or as you type) and on
 
 ## How
 
-1. Link HTML to the output `.css` file, then [Set Up Persistence with DevTools Workspaces](https://developers.google.com/web/tools/setup/setup-workflow).
-2. Toggle package (`Packages > atom-sassc-live > Toggle` or just `CTRL+ALT+O`)
+1. Install the package - `apm install atom-sassc-live`
+2. Link HTML to the output `.css` file, then [Set Up Persistence with DevTools Workspaces](https://developers.google.com/web/tools/setup/setup-workflow).
+3. Toggle package (`Packages > atom-sassc-live > Toggle` or just `CTRL+ALT+O`)
 
 ## Why
 
