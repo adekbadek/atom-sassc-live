@@ -156,9 +156,10 @@ module.exports = AtomSasscLive =
         editor.onDidChange ->
 
           if PARSE_ON_NEWLINE && editor.buffer != undefined
-            new_char = editor.buffer.history.undoStack[editor.buffer.history.undoStack.length-1].newText
-            if new_char == "↵" || new_char == "\n"
-              parseSass(editor, term, false)
+            if editor.buffer.history.undoStack.length > 1
+              new_char = editor.buffer.history.undoStack[editor.buffer.history.undoStack.length-1].newText
+              if new_char == "↵" || new_char == "\n"
+                parseSass(editor, term, false)
           else if !PARSE_ON_NEWLINE
             debounce (->
               parseSass(editor, term, false)
