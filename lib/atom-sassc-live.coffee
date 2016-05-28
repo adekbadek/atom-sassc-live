@@ -62,7 +62,9 @@ parseSass = (editor, term, dontSaveFile) ->
 
     unless dontSaveFile
       # first save the file
-      atom.workspace.saveActivePaneItem()
+      debounce (->
+        atom.workspace.saveActivePaneItem()
+      ), 500
 
     dir = editor.getPath().replace(directory_regex, '')
     if SUBDIR_NAME? && SUBDIR_NAME != '../'
@@ -155,11 +157,15 @@ module.exports = AtomSasscLive =
         # on any change (typing)
         editor.onDidChange ->
 
-          if PARSE_ON_NEWLINE && editor.buffer != undefined
-            if editor.buffer.history.undoStack.length > 1
-              new_char = editor.buffer.history.undoStack[editor.buffer.history.undoStack.length-1].newText
-              if new_char == "↵" || new_char == "\n"
-                parseSass(editor, term, false)
+          if PARSE_ON_NEWLINE
+            undoStack = editor.buffer.history.undoStack
+            if editor.buffer != undefined && undoStack.length > 1
+              if undoStack[undoStack.length-1].cachedChanges.length > 0
+                new_char = undoStack[undoStack.length-1].cachedChanges[0].newText
+                if new_char == "↵" || new_char == "\n"
+                  debounce (->
+                    parseSass(editor, term, false)
+                  ), 100
           else if !PARSE_ON_NEWLINE
             debounce (->
               parseSass(editor, term, false)
