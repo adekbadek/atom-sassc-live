@@ -159,8 +159,8 @@ module.exports = AtomSasscLive =
 
           if PARSE_ON_NEWLINE
             undoStack = editor.buffer.history.undoStack
-            if editor.buffer != undefined && undoStack.length > 1
-              if undoStack[undoStack.length-1].cachedChanges.length > 0
+            if editor.buffer != undefined && undoStack != undefined && undoStack.length > 1
+              if undoStack[undoStack.length-1].cachedChanges != undefined && undoStack[undoStack.length-1].cachedChanges.length > 0
                 new_char = undoStack[undoStack.length-1].cachedChanges[0].newText
                 if new_char == "↵" || new_char == "\n"
                   debounce (->
