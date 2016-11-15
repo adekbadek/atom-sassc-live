@@ -53,18 +53,16 @@ toCss = (fileName) ->
     # it's - name.scss or name.sass
     return fileName.replace(/\.sass|\.scss/, '.css')
 
-parseSass = (editor, term, dontSaveFile) ->
+parseSass = (editor, term, saveFile) ->
   if ACTIVE
     filename = editor.getPath().replace(filename_regex, '')
     # return if we ignore underscored'd files
     if IGNORE_WITH_UNDERSCORE and filename.indexOf('_') >= 0
       return
 
-    unless dontSaveFile
+    if saveFile
       # first save the file
-      debounce (->
-        atom.workspace.saveActivePaneItem()
-      ), 500
+      atom.workspace.saveActivePaneItem()
 
     dir = editor.getPath().replace(directory_regex, '')
     if SUBDIR_NAME? && SUBDIR_NAME != '../'
@@ -164,16 +162,16 @@ module.exports = AtomSasscLive =
                 new_char = undoStack[undoStack.length-1].cachedChanges[0].newText
                 if new_char == "↵" || new_char == "\n"
                   debounce (->
-                    parseSass(editor, term, false)
+                    parseSass(editor, term, true)
                   ), 100
-          else if !PARSE_ON_NEWLINE
+          else
             debounce (->
-              parseSass(editor, term, false)
+              parseSass(editor, term, true)
             ), DEBOUNCE_DELAY
 
         # on saving file
         editor.buffer.onWillSave ->
-          parseSass(editor, term, true)
+          parseSass(editor, term, false)
 
 
   deactivate: ->
