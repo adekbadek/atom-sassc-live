@@ -1,6 +1,6 @@
 # atom-sassc-live
 
-![demo gif](http://adamboro.com/stuff/asl-demo.gif "Logo Title Text 1")
+![demo gif](/demo.gif "Demo")
 
 ## What
 
