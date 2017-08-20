@@ -1,6 +1,7 @@
 {CompositeDisposable} = require 'atom'
 {MessagePanelView, LineMessageView} = require 'atom-message-panel'
 pty = require('pty.js')
+path = require('path')
 
 SUPPORTED_FILE_TYPES = [
   '.sass'
