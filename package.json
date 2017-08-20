@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "atom-message-panel": "^1.2.4",
-    "pty.js": "^0.3.0"
+    "pty.js": "^0.3.0",
+    "java": "^0.8.0"
   }
 }
